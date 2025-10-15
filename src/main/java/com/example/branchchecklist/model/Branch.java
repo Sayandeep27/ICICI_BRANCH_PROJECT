@@ -7,16 +7,22 @@ import org.springframework.data.mongodb.core.mapping.Document;
 public class Branch {
     @Id
     private String id;
-    private String name;
+    private String branchName;
     private String solId;
+
     public Branch() {}
-    public Branch(String name, String solId) {
-        this.name = name; this.solId = solId;
+
+    public Branch(String branchName, String solId) {
+        this.branchName = branchName;
+        this.solId = solId;
     }
+
     public String getId() { return id; }
     public void setId(String id) { this.id = id; }
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
+
+    public String getBranchName() { return branchName; }
+    public void setBranchName(String branchName) { this.branchName = branchName; }
+
     public String getSolId() { return solId; }
     public void setSolId(String solId) { this.solId = solId; }
 }
