@@ -7,17 +7,20 @@ import java.util.List;
 
 @Service
 public class ReviewService {
-    private final ReviewRepository repository;
 
-    public ReviewService(ReviewRepository repository) {
-        this.repository = repository;
+    private final ReviewRepository reviewRepository;
+
+    public ReviewService(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
     }
 
+    // Save a review and return the saved object
     public Review saveReview(Review review) {
-        return repository.save(review);
+        return reviewRepository.save(review);
     }
 
+    // Fetch all reviews for a specific branch
     public List<Review> getReviewsByBranch(String branchId) {
-        return repository.findByBranchId(branchId);
+        return reviewRepository.findByBranchId(branchId);
     }
 }

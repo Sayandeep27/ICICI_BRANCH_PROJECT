@@ -2,6 +2,7 @@ package com.example.branchchecklist.controller;
 
 import com.example.branchchecklist.model.Review;
 import com.example.branchchecklist.service.ReviewService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,13 +18,15 @@ public class ReviewController {
 
     // Save review (remarks + base64 photo)
     @PostMapping
-    public Review submitReview(@RequestBody Review review) {
-        return reviewService.saveReview(review);
+    public ResponseEntity<Review> submitReview(@RequestBody Review review) {
+        Review saved = reviewService.saveReview(review);
+        return ResponseEntity.ok(saved);
     }
 
     // Get all reviews for a branch
     @GetMapping("/{branchId}")
-    public List<Review> getReviewsByBranch(@PathVariable String branchId) {
-        return reviewService.getReviewsByBranch(branchId);
+    public ResponseEntity<List<Review>> getReviewsByBranch(@PathVariable String branchId) {
+        List<Review> reviews = reviewService.getReviewsByBranch(branchId);
+        return ResponseEntity.ok(reviews);
     }
 }
