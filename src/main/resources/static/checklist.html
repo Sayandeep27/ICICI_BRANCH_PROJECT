@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Branch Visual Checklist</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h2>Branch Visual Checklist</h2>
+
+    <label for="sectionDropdown">Select Section:</label>
+    <select id="sectionDropdown" onchange="loadCategories()"></select>
+
+    <label for="categoryDropdown">Select Category:</label>
+    <select id="categoryDropdown"></select>
+
+    <button onclick="showReviewPopup()">Needs Improvement</button>
+
+    <div id="reviewPopup" class="popup hidden">
+      <textarea id="remarks" placeholder="Enter remarks here..."></textarea><br>
+      <input type="file" id="photoUpload" accept="image/*"><br>
+      <button onclick="submitReview()">Submit Review</button>
+      <button onclick="closePopup()">Cancel</button>
+    </div>
+  </div>
+
+  <script src="js/checklist.js"></script>
+</body>
+</html>

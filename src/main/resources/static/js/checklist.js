@@ -1,71 +1,72 @@
-$(function() {
-  let current = { section: null, item: null };
-  function showModal(section, item) {
-    current.section = section; current.item = item;
-    $('#selectedText').text(section + " - " + item);
-    $('#remarks').val('');
-    $('#photo').val('');
-    $('#remarkModal').show();
-  }
-  function hideModal() {
-    $('#remarkModal').hide();
-  }
+let sections = [];
 
-  $('.checklist-item').on('click', function() {
-    const section = $(this).data('section');
-    const item = $(this).data('item');
-    showModal(section, item);
+async function loadSections() {
+  const token = localStorage.getItem("jwt");
+  if (!token) return window.location.href = "index.html";
+
+  const res = await fetch("/api/checklist-sections", {
+    headers: { Authorization: `Bearer ${token}` },
   });
+  sections = await res.json();
 
-  $('#closeModal, #cancelBtn').on('click', function() {
-    hideModal();
+  const sectionDropdown = document.getElementById("sectionDropdown");
+  sectionDropdown.innerHTML = `<option value="">Select Section</option>`;
+  sections.forEach(sec => {
+    sectionDropdown.innerHTML += `<option value="${sec.section}">${sec.section}</option>`;
   });
+}
 
-  $('#submitBtn').on('click', function() {
-    const remarks = $('#remarks').val();
-    const branchId = $('#branchId').val();
-    const token = $('#token').val();
-    const mobile = ''; // token subject will be used by backend via JWT filter
+function loadCategories() {
+  const sectionName = document.getElementById("sectionDropdown").value;
+  const section = sections.find(s => s.section === sectionName);
+  const categoryDropdown = document.getElementById("categoryDropdown");
+  categoryDropdown.innerHTML = "";
 
-    const file = document.getElementById('photo').files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = function(e) {
-        const base64 = e.target.result;
-        sendData(base64);
-      };
-      reader.readAsDataURL(file);
+  if (section && section.categories) {
+    section.categories.forEach(cat => {
+      categoryDropdown.innerHTML += `<option value="${cat.title}">${cat.title}</option>`;
+    });
+  }
+}
+
+function showReviewPopup() {
+  document.getElementById("reviewPopup").classList.remove("hidden");
+}
+
+function closePopup() {
+  document.getElementById("reviewPopup").classList.add("hidden");
+}
+
+async function submitReview() {
+  const branchId = localStorage.getItem("selectedBranchId");
+  const section = document.getElementById("sectionDropdown").value;
+  const category = document.getElementById("categoryDropdown").value;
+  const remarks = document.getElementById("remarks").value;
+  const file = document.getElementById("photoUpload").files[0];
+
+  if (!file) return alert("Please upload a photo");
+
+  const reader = new FileReader();
+  reader.onloadend = async () => {
+    const photoBase64 = reader.result;
+
+    const res = await fetch("/api/review", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("jwt")}`,
+      },
+      body: JSON.stringify({ branchId, section, category, remarks, photoBase64 }),
+    });
+
+    if (res.ok) {
+      alert("Review submitted successfully!");
+      window.location.href = "success.html";
     } else {
-      sendData(null);
+      alert("Error submitting review.");
     }
+  };
+  reader.readAsDataURL(file);
+}
 
-    hideModal();
-
-    function sendData(imageBase64) {
-      const payload = {
-        section: current.section,
-        item: current.item,
-        remarks: remarks,
-        imageBase64: imageBase64,
-        branchId: branchId,
-        mobile: mobile
-      };
-
-      $.ajax({
-        url: '/api/checklist/submit',
-        method: 'POST',
-        contentType: 'application/json',
-        data: JSON.stringify(payload),
-        beforeSend: function(xhr) {
-          if (token) xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-        },
-        success: function() {
-          alert('Saved');
-        },
-        error: function(err) {
-          alert('Error saving: ' + (err.responseText || err.statusText));
-        }
-      });
-    }
-  });
-});
+loadSections();

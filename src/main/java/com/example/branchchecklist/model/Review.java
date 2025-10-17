@@ -9,15 +9,27 @@ public class Review {
 
     @Id
     private String id;
+
+    // Branch details (auto-linked)
     private String branchId;
+    private String branchName;
+    private String solId;
+
+    // Checklist details
     private String section;
     private String category;
+    private String subItem;
+
+    // Review content
     private String remarks;
     private String photoBase64;
+
     private LocalDateTime createdAt = LocalDateTime.now();
 
     public Review() {
     }
+
+    // --- Getters and Setters ---
 
     public String getId() {
         return id;
@@ -29,6 +41,22 @@ public class Review {
 
     public void setBranchId(String branchId) {
         this.branchId = branchId;
+    }
+
+    public String getBranchName() {
+        return branchName;
+    }
+
+    public void setBranchName(String branchName) {
+        this.branchName = branchName;
+    }
+
+    public String getSolId() {
+        return solId;
+    }
+
+    public void setSolId(String solId) {
+        this.solId = solId;
     }
 
     public String getSection() {
@@ -45,6 +73,14 @@ public class Review {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public String getSubItem() {
+        return subItem;
+    }
+
+    public void setSubItem(String subItem) {
+        this.subItem = subItem;
     }
 
     public String getRemarks() {

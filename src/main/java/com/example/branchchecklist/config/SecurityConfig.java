@@ -25,22 +25,39 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(auth -> auth
-                // ✅ Allow public access to authentication endpoints
-                .requestMatchers("/", "/auth/**", "/mobile", "/mobile-submit").permitAll()
-                
-                // ✅ Allow public access to your new checklist-section endpoints
-                .requestMatchers("/api/checklist-section/**").permitAll()
-                
-                // ✅ Allow other specific endpoints
-                .requestMatchers("/api/branch/**", "/api/branches", "/branch").permitAll()
-                
-                // ✅ Everything else requires authentication
+                // ✅ Allow access to static frontend pages
+                .requestMatchers(
+                    "/", 
+                    "/index.html",
+                    "/branch.html",
+                    "/checklist.html",
+                    "/success.html",
+                    "/style.css",
+                    "/js/**",
+                    "/images/**"
+                ).permitAll()
+
+                // ✅ Allow public access to authentication and mobile endpoints
+                .requestMatchers("/auth/**", "/mobile", "/mobile-submit").permitAll()
+
+                // ✅ Allow public access to checklist & branch endpoints for UI
+                .requestMatchers(
+                    "/api/checklist-section/**", 
+                    "/api/branch/**", 
+                    "/api/branches", 
+                    "/branch"
+                ).permitAll()
+
+                // ✅ All other API requests need valid JWT
                 .anyRequest().authenticated()
             )
-            // ✅ No sessions — stateless JWT handling
-            .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-            
-            // ✅ Add your JWT filter before UsernamePasswordAuthenticationFilter
+
+            // ✅ Use stateless session management for JWT
+            .sessionManagement(session -> 
+                session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+            )
+
+            // ✅ Add JWT filter before username/password authentication
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
